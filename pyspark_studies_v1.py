@@ -49,3 +49,13 @@
 
 # MAGIC %sql
 # MAGIC SELECT * FROM marks
+
+# COMMAND ----------
+
+# file (in case of repo references) or dbfs (in case of Data references) needs to be inserted before the link
+df_json = spark.read.json('file:/Workspace/Repos/peter.kondacs@gmail.com/pyspark/parameters.json', multiLine=True)
+
+# COMMAND ----------
+
+import pandas as pd
+pd.read_json(r'/Workspace/Repos/peter.kondacs@gmail.com/pyspark/parameters.json')

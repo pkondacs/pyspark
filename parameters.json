@@ -7,5 +7,99 @@
     "primary_keys": [
         "CreditAgreementIdentifierSchema",
         "CreditAgreementIdentifierValue"
+    ],
+    "schema": [
+        {
+            "column": "CreditAgreementIdentifierSchema",
+            "type": "string",
+            "comment": "(LocalFacilityIdentifierSchema, LocalFacilityIdentifierValue) uniquely identifies a Credit Facility in the bank."
+        },
+        {
+            "column": "CreditAgreementIdentifierValue",
+            "type": "string",
+            "comment": "A credit agreement identifier is an identifier by which a credit agreement can be uniquely identified. "
+        }
+    ],
+    "transformations": [
+        {
+            "partition_name": "cif",
+            "valid_from": "2012-01-01",
+            "valid_to": "2021-01-03",
+            "query": "{{ base_url_config }}/{{ pdm_table }}/creditagreement_CIF.sql",
+            "sources": [
+                {
+                    "location": "{{ base_url }}/acquisition_layer/transient_zone/em/em_cif/FACILITY_ARRANGEMENTS",
+                    "format": "orc",
+                    "table_name": "FACILITY_ARRANGEMENTS",
+                    "system_name": "em_cif",
+                    "business_key": [
+                        "UNIQUE_ID_IN_SOURCE_SYSTEM",
+                        "SOURCE_SYSTEM_VALUE"
+                    ],
+                    "used_fields": [
+                        "UNIQUE_ID_IN_SOURCE_SYSTEM",
+                        "SOURCE_SYSTEM_VALUE",
+                        "ACCOUNT_NUMBER",
+                        "ARRANGEMENT_PURPOSE_TYPE_VALUE",
+                        "COMMERCIAL_CREDIT_TYPE_VALUE"
+                    ],
+                    "custom_implementation": {
+                        "custom_class": "raptor.extractors.discontinuous_extractor.DiscontinuousExtractor",
+                        "reason": "em delivers data during weekends and we expect records to be closed if they are not coming in the upcoming snapshotdates"
+                    }
+                },
+                {
+                    "location": "{{ base_url }}/acquisition_layer/transient_zone/em/em_cif/INVOLVED_PARTIES",
+                    "format": "orc",
+                    "table_name": "INVOLVED_PARTIES",
+                    "system_name": "em_cif",
+                    "filter_cond": "PARTY_ROLES_VALUE = 'PR020' AND END_DT IS NULL",
+                    "business_key": [
+                        "FACILITY_ARRANGEMENT_SSC",
+                        "FACILITY_ARRANGEMENT_UID"
+                    ],
+                    "used_fields": [
+                        "ACCOUNT_ARRANGEMENT_SSC",
+                        "ACCOUNT_ARRANGEMENT_UID",
+                        "COLLATERAL_ARRANGEMENT_SSC",
+                        "COLLATERAL_ARRANGEMENT_UID",
+                        "FACILITY_ARRANGEMENT_SSC"
+                    ],
+                    "custom_implementation": {
+                        "custom_class": "raptor.extractors.discontinuous_extractor.DiscontinuousExtractor",
+                        "reason": "em delivers data during weekends and we expect records to be closed if they are not coming in the upcoming snapshotdates"
+                    }
+                }
+            ]
+        },
+        {
+            "partition_name": "cre",
+            "valid_from": "2021-01-04",
+            "valid_to": "9999-12-31",
+            "query": "{{ base_url_config }}/{{ pdm_table }}/creditagreement_CRE.sql",
+            "sources": [
+                {
+                    "location": "{{ base_url }}/acquisition_layer/transient_zone/dial/cre/CRE_CreditAgreement",
+                    "format": "orc",
+                    "table_name": "CRE_CreditAgreement",
+                    "system_name": "cre",
+                    "filter_cond": "(enddate IS NULL OR enddate > CAST('2020-12-31' AS DATE))",
+                    "business_key": [
+                        "agreementid"
+                    ],
+                    "used_fields": [
+                        "AGREEMENTID",
+                        "AGREEMENTTYPEID",
+                        "COMMERCIALCREDITTYPEID",
+                        "BENEFITAGREEMENTID",
+                        "ENDDATE"
+                    ],
+                    "custom_implementation": {
+                        "custom_class": "raptor.custom.extractions.cre.creditagreement.CreditAgreement",
+                        "reason": "CRE creditagreement has more than 1 record per business key per snapshot."
+                    }
+                }
+            ]
+        }
     ]
 }
