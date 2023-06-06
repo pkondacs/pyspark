@@ -49,3 +49,21 @@
 
 # MAGIC %sql
 # MAGIC SELECT * FROM marks
+
+# COMMAND ----------
+
+!ls
+!pwd
+
+# COMMAND ----------
+
+# file (in case of repo references) or dbfs (in case of Data references) needs to be inserted before the link
+df_json = spark.read.json('file:/Workspace/Repos/peter.kondacs@gmail.com/pyspark/parameters.json')
+
+# COMMAND ----------
+
+df_json.show(2)
+
+# COMMAND ----------
+
+dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get()
