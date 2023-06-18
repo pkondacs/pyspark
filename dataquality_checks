@@ -1,0 +1,15 @@
+
+# Create random dataframes to compare data
+
+
+
+# Create a data quality check Python package
+
+
+class MetadataCheck:
+    def __init__(self, balance):
+        self.balance = balance
+
+    def printbalance(self):
+        print("The balance of the account is:",self.balance)
+
