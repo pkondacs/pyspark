@@ -1,15 +1,53 @@
+import pandas as pd
+import random
+from datetime import datetime
 
-# Create random dataframes to compare data
+# Create an empty list to store the dataframes
+dfs = []
 
+# Define the range of customer IDs
+customer_ids = range(1, 6)
 
+# Loop through each customer ID
+for customer_id in customer_ids:
+    # Generate a random number of transactions between 2 and 6
+    num_transactions = random.randint(2, 6)
+    
+    # Create a list to store the records for this customer
+    records = []
+    
+    # Loop through each transaction
+    for _ in range(num_transactions):
+        # Generate a random transaction time between years 2018 and 2021
+        transaction_time = pd.to_datetime(random.randint(1514764800, 1640995199), unit='s')
+        
+        # Generate a random amount between 0 and 1000
+        amount = random.uniform(0, 1000)
+        
+        # Generate a random transaction type: debit, credit, or withdrawal
+        trans_type = random.choice(["debit", "credit", "withdrawal"])
+        
+        # Append the record to the list
+        records.append({
+            "Customer ID": customer_id,
+            "Transaction Time": transaction_time,
+            "Amount": amount,
+            "Trans Type": trans_type
+        })
+    
+    # Create a dataframe for this customer's records
+    customer_df = pd.DataFrame(records)
+    
+    # Set the combined unique key using customer ID and transaction time
+    customer_df.set_index(["Customer ID", "Transaction Time"], inplace=True)
+    
+    # Append the customer dataframe to the list of dataframes
+    dfs.append(customer_df)
 
-# Create a data quality check Python package
+# Concatenate all dataframes into a single dataframe
+df = pd.concat(dfs)
 
+# Print the dataframe
+print(df)
 
-class MetadataCheck:
-    def __init__(self, balance):
-        self.balance = balance
-
-    def printbalance(self):
-        print("The balance of the account is:",self.balance)
 

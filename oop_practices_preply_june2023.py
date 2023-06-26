@@ -2,7 +2,7 @@
 
 # Create a parent Account class which is going to be inherited by the CurrentAccount class
 
-class Account:
+class AccountGeneral:
     def __init__(self, balance):
         self.balance = balance
 
@@ -22,7 +22,7 @@ class Account:
 # and assign 200 and 400 to each
 
 
-class CurrentAccount(Account):
+class CurrentAccount(AccountGeneral):
     def __init__(self, a, b, balance):
         super().__init__(balance)
         self.a = a
@@ -134,3 +134,82 @@ class Employee(Human):
     
 employee = Employee("John Doe", 34, "office", "Software Engineer")
 print(employee)
+
+
+# Q: Make 2 classes cash_inflow and cash_outflow. 
+# Cash_inflow will have a method to add cash to account and cash_outflow will
+# have a method to remove cash from an account.
+# Then make a account class which will inherit from both cash_inflow and cash_outflow
+# and will have a display_total_transactions method that will display 
+# all the transaction that have been made so far and a display_current_wealth 
+# that will show how much money is there in the account right now. 
+# Use multiple inheritance to solve this problem.
+
+class Cash_inflow:
+    def __init__(self):
+        self.transactions = []
+
+    def add_cash(self, amount):
+        self.transactions.append(amount)
+
+
+class Cash_outflow:
+    def __init__(self):
+        self.transactions = []
+
+    def remove_cash(self, amount):
+        self.transactions.append(-amount)
+
+
+class Account(Cash_inflow, Cash_outflow):
+    def display_total_transactions(self):
+        print("Transactions:")
+        for transaction in self.transactions:
+            if transaction > 0:
+                print(f"Cash inflow: {transaction}")
+            else:
+                print(f"Cash outflow: {abs(transaction)}")
+
+    def display_current_wealth(self):
+        total_cash = sum(self.transactions)
+        print(f"Current wealth: {total_cash}")
+
+
+# Example usage
+account = Account()
+
+account.add_cash(1000)
+account.add_cash(2000)
+account.remove_cash(500)
+account.add_cash(1500)
+
+account.display_total_transactions()
+account.display_current_wealth()
+
+    
+# Q: Create a class with 2 methods add and average and call them
+# sequentially using method chaining
+# add will take in a list of numbers and calculate their total and
+# average will calculate the average of the total
+
+class MathOperations:
+    def __init__(self):
+        self.total = 0
+        self.count = 0
+
+    def add(self, numbers):
+        self.total += sum(numbers)
+        self.count += len(numbers)
+        return self
+
+    def average(self):
+        if self.count == 0:
+            return 0
+        return self.total / self.count
+
+# Example usage
+numbers = [1, 2, 3, 4, 5]
+
+result = MathOperations().add(numbers).average()
+print(f"Average: {result}")
+
